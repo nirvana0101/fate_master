@@ -1,0 +1,15 @@
+<scheme name="Minimal" version="142">
+  <option name="LINE_SPACING" value="1.5" />
+  <colors>
+    <option name="CARET_ROW_COLOR" value="f6f6f6" />
+    <option name="TEXT" value="4A4A4A" />
+  </colors>
+  <attributes>
+    <option name="KEYWORD">
+      <value>
+        <option name="FOREGROUND" value="2E75B3" />
+        <option name="FONT_TYPE" value="1" /> <!-- 加粗 -->
+      </value>
+    </option>
+  </attributes>
+</scheme>
