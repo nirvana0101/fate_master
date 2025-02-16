@@ -1,3 +1,2 @@
-OPENAI_API_KEY="sk-QH6zwcxIVlTb5N6gZvLWYL8JcsX2653J54qFYPeDmPMSiPXY"
-OPENAI_PROXY="https://api.openai-proxy.org/v1"
-OPENAI_API_BASE="https://api.openai-proxy.org/v1"
+OPENAI_API_KEY=sk-QH6zwcxIVlTb5N6gZvLWYL8JcsX2653J54qFYPeDmPMSiPXY
+OPENAI_API_BASE=https://api.openai-proxy.org/v1

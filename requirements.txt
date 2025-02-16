@@ -6,7 +6,4 @@ langchain==0.1.10
 redis
 qdrant_client == 1.7.1
 uvicorn==0.23.2
-openai~=1.61.1
-langchain-openai~=0.0.5
-langchain-core~=0.1.28
 python-dotenv~=1.0.1

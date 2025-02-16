@@ -1,79 +1,81 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
-from langchain.agents import create_openai_tools_agent, AgentExecutor
+from fastapi import FastAPI
+# 加载 .env 文件
 from dotenv import load_dotenv
+from langchain.agents import AgentExecutor, create_openai_tools_agent
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.tools import tool
 import os
+load_dotenv(".env ")
+# 读取环境变量
+openai_api_key = os.getenv("OPENAI_API_KEY")
+openai_base_url = os.getenv("OPENAI_BASE_URL")
 
-import test
+# 打印配置信息
+# print(f"OpenAI API Key: {openai_api_key}")
+# print(f"OpenAI Base URL: {openai_base_url}")
+# 示例工具定义（根据实际需求替换）
 
-load_dotenv(".env")
 app = FastAPI()
-# 用于存储连接的 WebSocket 客户端
-connected_clients = set()
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-@app.post("/chat")
-def chat(query: str):
-    master = Master()
-    return master.run(query)
-@app.post("/add_urls")
-def add_urls():
-    return {"response": "URLs added!"}
-@app.post("/add_pdfs")
-def add_pdfs():
-    return {"response": "PDFs added!"}
-@app.post("/add_texts")
-def add_texts():
-    return {"response": "Texts added!"}
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    connected_clients.add(websocket)
-    try:
-        while True:
-            data = await websocket.receive_text()
-            # 回复接收到的消息给客户端
-            await websocket.send_text(f"Received: {data}")
-    except WebSocketDisconnect:
-        connected_clients.remove(websocket)
-        await websocket.close()
-class Master:
+@tool
+def search(query: str) -> str:
+    """用于执行网络搜索的工具"""
+    return f"搜索结果: {query} (示例)"
+
+
+class AIAgent:
     def __init__(self):
-        self.chatmodel = ChatOpenAI(
-            model="gpt-4-1106-preview",
+        # 初始化 OpenAI 配置
+        self.llm = ChatOpenAI(
+            model="gpt-3.5-turbo",
             temperature=0,
-            streaming=True,
-            api_key="sk-QH6zwcxIVlTb5N6gZvLWYL8JcsX2653J54qFYPeDmPMSiPXY",  # 替换为实际的API密钥
-            base_url="https://api.openai-proxy.org/v1"  # 替换为实际的API地址
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url=os.getenv("OPENAI_BASE_URL")
         )
-        self.MEMORY_KEY = "chat_history"
-        self.SYSTEM_PROMPT = ""
+
+        # 定义工具集
+        self.tools = [search]  # 可添加更多工具
+
+        # 构建提示模板
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", "你是一个助理"),
+            ("system", "你是专业的人工智能助手"),
             ("user", "{input}"),
             MessagesPlaceholder(variable_name="agent_scratchpad"),
         ])
-        self.memory = []
-        tools = [test]  # 确保 'test' 是一个有效的工具对象或函数
-        agent = create_openai_tools_agent(
-            self.chatmodel,
-            tools=tools,
+
+        # 创建代理
+        self.agent = create_openai_tools_agent(
+            llm=self.llm,
+            tools=self.tools,
             prompt=self.prompt
         )
+
+        # 初始化执行器
         self.agent_executor = AgentExecutor(
-            agent=agent,
-            tools=tools,
-            verbose=True,
+            agent=self.agent,
+            tools=self.tools,
+            verbose=True
         )
 
-    def run(self, query):
-        result = self.agent_executor.invoke(query)
-        return result
+
+# 初始化主代理
+master = AIAgent()
+
+
+@app.get("/")
+def health_check():
+    return {"status": "OK"}
+
+@app.post("/chat")
+def chat_endpoint(query: str):
+    try:
+        result = master.agent_executor.invoke({"input": query})
+        return {"response": result["output"]}
+    except Exception as e:
+        return {"error": str(e)}
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
