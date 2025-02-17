@@ -6,6 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import tool
+from langchain_community.utilities import SerpAPIWrapper
 import os
 load_dotenv(".env ")
 # 读取环境变量
@@ -20,8 +21,11 @@ openai_base_url = os.getenv("OPENAI_BASE_URL")
 app = FastAPI()
 @tool
 def search(query: str) -> str:
-    """用于执行网络搜索的工具"""
-    return f"搜索结果: {query} (示例)"
+    """只有需要了解实时信息或不知道的事情的时候才会使用这个工具。"""
+    serpapi = SerpAPIWrapper()
+    result=serpapi.run(query)
+    print("实时搜索结果：",result)
+    return result
 
 
 class AIAgent:
@@ -162,5 +166,4 @@ def chat_endpoint(query: str):
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=8080)
