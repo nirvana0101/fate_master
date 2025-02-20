@@ -3,4 +3,4 @@
 
 # IDE
 .idea/
-.vscode/
+.vscode/!/.env

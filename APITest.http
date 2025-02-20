@@ -6,3 +6,9 @@ POST http://localhost:8080/chat?query=我是陈小夫，1978年8月9日生人，
 
 ### 情绪触发测试（测试 depressed 逻辑）
 POST http://localhost:8080/chat
+
+### 摇卦测试
+POST http://localhost:8080/chat?query=我要抽签摇一卦
+
+### 解梦测试
+POST http://localhost:8080/chat?query=我梦到了猪飞上了天

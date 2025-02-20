@@ -1,10 +1,12 @@
+import json
+
 from langchain_community.utilities import SerpAPIWrapper
 from langchain_community.vectorstores.qdrant import Qdrant
-from langchain_openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings, OpenAI
 from qdrant_client import QdrantClient
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.tools import tool
 from langchain_core.output_parsers import JsonOutputParser
 
@@ -67,5 +69,42 @@ def bazi_cesuan(query: str):
             return returnstring
         except Exception as e:
             return "八字查询失败,可以时你忘记询问用户姓名或者出生年月日时了。"
+    else:
+        return "技术错误，请告诉用户稍后再试。"
+
+
+@tool
+def yaoyigua():
+    """只有用户想要占卜抽签的时候才会使用这个工具。"""
+    api_key = YUANFENJU_API_KEY
+    url = f"https://api.yuanfenju.com/index.php/v1/Zhanbu/yaogua"
+    result = requests.post(url, data={"api_key": api_key})
+    if result.status_code == 200:
+        print("====返回数据=====")
+        print(result.json())
+        returnstring = json.loads(result.text)
+        image = returnstring["data"]["image"]
+        print("卦图片:", image)
+        return returnstring
+    else:
+        return "技术错误，请告诉用户稍后再试。"
+
+
+@tool
+def jiemeng(query: str):
+    """只有用户想要解梦的时候才会使用这个工具,需要输入用户梦境的内容，如果缺少用户梦境的内容则不可用。"""
+    api_key = YUANFENJU_API_KEY
+    url = f"https://api.yuanfenju.com/index.php/v1/Gongju/zhougong"
+    LLM = OpenAI(temperature=0)
+    prompt = PromptTemplate.from_template("根据内容提取1个关键词，只返回关键词，内容为:{topic}")
+    prompt_value = prompt.invoke({"topic": query})
+    keyword = LLM.invoke(prompt_value)
+    print("提取的关键词:", keyword)
+    result = requests.post(url, data={"api_key": api_key, "title_zhougong": keyword})
+    if result.status_code == 200:
+        print("====返回数据=====")
+        print(result.json())
+        returnstring = json.loads(result.text)
+        return returnstring
     else:
         return "技术错误，请告诉用户稍后再试。"
