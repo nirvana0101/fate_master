@@ -1,0 +1,35 @@
+POST http://localhost:8080/chat?query=我是陈小夫，1978年8月9日生人，帮我算算2024年运势
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 0
+
+<> 2025-02-20T132423.200.json
+
+###
+
+POST http://localhost:8080/chat?query=帮我算算2024年运势
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 0
+
+<> 2025-02-20T132302.200.json
+
+###
+
+POST http://localhost:8080/chat
+Content-Type: application/json
+Content-Length: 42
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "query": "帮我算算2024年运势"
+}
+
+<> 2025-02-20T132152.422.json
+
+###
+

@@ -1,0 +1,14 @@
+{
+  "detail": [
+    {
+      "type": "missing",
+      "loc": [
+        "query",
+        "query"
+      ],
+      "msg": "Field required",
+      "input": null,
+      "url": "https://errors.pydantic.dev/2.10/v/missing"
+    }
+  ]
+}

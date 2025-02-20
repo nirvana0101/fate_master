@@ -1,0 +1,8 @@
+### 健康检查
+GET http://localhost:8080/
+
+### 普通对话测试
+POST http://localhost:8080/chat?query=我是陈小夫，1978年8月9日生人，帮我算算2024年运势
+
+### 情绪触发测试（测试 depressed 逻辑）
+POST http://localhost:8080/chat
