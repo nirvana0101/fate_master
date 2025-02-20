@@ -1,0 +1,6 @@
+# 环境文件
+.env
+
+# IDE
+.idea/
+.vscode/
